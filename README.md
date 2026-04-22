@@ -43,11 +43,18 @@ Currently the only implemented Categories from the Documentation Page are:
 - Tasks
 - Users
 
+ToDO:
+
+- Server Firewalls
+- Server ISO
+- Server Images
+- Server Networking
+
 ## Contributing
 
 Add missing endpoints by following the existing pattern:
 
-- Add API methods in `internal/api/<category>.go` using the `Client.Do` helper.
-- Add CLI commands in `cmd/<category>.go` and register under an appropriate parent command.
+- Add API methods in `internal/api/<category>.go`.
+- Add CLI commands in `cmd/<category>.go` and register under server command.
 
 You can also refactor code or correct naming of things. Nothing is set in stone right now. Just send me a pull request and i'm gonna look into it, when i have time
