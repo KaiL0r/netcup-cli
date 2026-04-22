@@ -7,33 +7,12 @@ import (
 	"strings"
 )
 
-// ======================
-// Types + Params
-// ======================
-
-// type ListTasksParams struct {
-// 	Limit    int
-// 	Offset   int
-// 	Q        string
-// 	ServerID int
-// 	State    string
-// }
-
-// type ResponseError struct {
-// 	Code    string `json:"code"`
-// 	Message string `json:"message"`
-// }
-
 type Disk struct {
 	Name            string        `json:"name"`
 	AllocationInMiB int           `json:"allocationInMiB"`
 	CapacityInMiB   int           `json:"capacityInMiB"`
 	StorageDriver   StorageDriver `json:"storageDriver"`
 }
-
-// ======================
-// API Method
-// ======================
 
 func (c *Client) ListDisks(serverId int) ([]Disk, error) {
 	u, _ := url.Parse(fmt.Sprintf("/servers/%d/disks", serverId))
