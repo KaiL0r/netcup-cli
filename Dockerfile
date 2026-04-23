@@ -11,4 +11,8 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /netcup-cli
 
+VOLUME /secrets
+ENV NETCUP_TOKEN_PATH="/secrets/token.json"
+
+
 CMD ["/netcup-cli"]
