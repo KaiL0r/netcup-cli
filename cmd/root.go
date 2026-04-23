@@ -25,9 +25,6 @@ var rootCmd = &cobra.Command{
 			if apiClient == nil {
 				return fmt.Errorf("failed to create API client")
 			}
-
-			// check token initially
-			apiClient.Auth.GetAccessToken()
 		}
 		return nil
 	},

@@ -25,6 +25,7 @@ type HTTPClient interface {
 
 type AuthProvider interface {
 	GetAccessToken() (string, error)
+	DeviceFlow() (string, error)
 }
 
 type Client struct {
@@ -51,11 +52,6 @@ func MustClient() *Client {
 		auth.NewFileStorage(),
 		auth.RealClock{},
 	)
-
-	_, err := tokenProvider.GetAccessToken()
-	if err != nil {
-		panic(err)
-	}
 
 	baseURL := os.Getenv("NETCUP_SCP_BASE_URL")
 	if baseURL == "" {
