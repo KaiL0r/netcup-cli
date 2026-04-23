@@ -142,8 +142,12 @@ func (c *Client) patchServer(serverID int, stateOption string, body map[string]a
 		return Task{}, err
 	}
 
-	var out Task
-	return out, json.NewDecoder(strings.NewReader(resp)).Decode(&out)
+	if len(resp) != 0 {
+		var out Task
+		return out, json.NewDecoder(strings.NewReader(resp)).Decode(&out)
+	}
+
+	return Task{}, nil
 }
 
 func (c *Client) GetServer(serverID int) (Server, error) {
