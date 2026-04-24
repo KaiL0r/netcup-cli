@@ -46,9 +46,9 @@ type HTTPOAuthClient struct {
 	HTTP *http.Client
 }
 
-func NewHTTPOAuthClient() *HTTPOAuthClient {
+func NewHTTPOAuthClient(httpClient *http.Client) OAuthClient {
 	return &HTTPOAuthClient{
-		HTTP: http.DefaultClient,
+		HTTP: httpClient,
 	}
 }
 
@@ -61,7 +61,7 @@ func (c *HTTPOAuthClient) StartDeviceFlow() (*DeviceAuthResponse, error) {
 	data.Set("client_id", "scp")
 	data.Set("scope", "offline_access openid")
 
-	resp, err := http.Post(
+	resp, err := c.HTTP.Post(
 		baseRealm+"/auth/device",
 		"application/x-www-form-urlencoded",
 		bytes.NewBufferString(data.Encode()),
@@ -85,7 +85,7 @@ func (c *HTTPOAuthClient) PollForToken(deviceCode string, interval int) (*TokenR
 		data.Set("device_code", deviceCode)
 		data.Set("client_id", "scp")
 
-		resp, err := http.Post(
+		resp, err := c.HTTP.Post(
 			baseRealm+"/token",
 			"application/x-www-form-urlencoded",
 			bytes.NewBufferString(data.Encode()),
@@ -150,7 +150,7 @@ func (c *HTTPOAuthClient) RevokeToken(refreshToken string) error {
 	data.Set("token", refreshToken)
 	data.Set("token_type_hint", "refresh_token")
 
-	resp, err := http.Post(
+	resp, err := c.HTTP.Post(
 		baseRealm+"/revoke",
 		"application/x-www-form-urlencoded",
 		bytes.NewBufferString(data.Encode()),

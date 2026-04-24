@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/KaiL0r/netcup-cli/internal/api"
+	"github.com/KaiL0r/netcup-cli/api"
 	"github.com/spf13/cobra"
 )
 

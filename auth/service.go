@@ -9,14 +9,19 @@ import (
 // SERVICE
 // ======================
 
-type Service struct {
+type AuthProvider interface {
+	GetAccessToken() (string, error)
+	DeviceFlow() (string, error)
+}
+
+type AuthService struct {
 	OAuth   OAuthClient
 	Storage TokenStorage
 	Clock   Clock
 }
 
-func NewService(oauth OAuthClient, storage TokenStorage, clock Clock) *Service {
-	return &Service{
+func NewAuthService(oauth OAuthClient, storage TokenStorage, clock Clock) AuthProvider {
+	return &AuthService{
 		OAuth:   oauth,
 		Storage: storage,
 		Clock:   clock,
@@ -27,7 +32,7 @@ func NewService(oauth OAuthClient, storage TokenStorage, clock Clock) *Service {
 // PUBLIC API
 // ======================
 
-func (s *Service) GetAccessToken() (string, error) {
+func (s *AuthService) GetAccessToken() (string, error) {
 	token, err := s.Storage.Load()
 
 	// no token → error
@@ -40,7 +45,7 @@ func (s *Service) GetAccessToken() (string, error) {
 		// refresh
 		newToken, err := s.OAuth.RefreshToken(token.RefreshToken)
 		if err == nil {
-			_ = s.Storage.Save(&TokenStore{
+			_ = s.Storage.Save(&Token{
 				AccessToken:  newToken.AccessToken,
 				RefreshToken: newToken.RefreshToken,
 				ExpiresAt:    s.Clock.Now().Add(time.Duration(newToken.ExpiresIn) * time.Second).Unix(),
@@ -56,7 +61,7 @@ func (s *Service) GetAccessToken() (string, error) {
 // DEVICE FLOW
 // ======================
 
-func (s *Service) DeviceFlow() (string, error) {
+func (s *AuthService) DeviceFlow() (string, error) {
 	device, err := s.OAuth.StartDeviceFlow()
 	if err != nil {
 		return "", err
@@ -70,7 +75,7 @@ func (s *Service) DeviceFlow() (string, error) {
 		return "", err
 	}
 
-	_ = s.Storage.Save(&TokenStore{
+	_ = s.Storage.Save(&Token{
 		AccessToken:  token.AccessToken,
 		RefreshToken: token.RefreshToken,
 		ExpiresAt:    s.Clock.Now().Add(time.Duration(token.ExpiresIn) * time.Second).Unix(),

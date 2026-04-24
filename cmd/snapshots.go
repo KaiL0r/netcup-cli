@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/KaiL0r/netcup-cli/internal/api"
+	"github.com/KaiL0r/netcup-cli/api"
 )
 
 var snapshotsCmd = &cobra.Command{

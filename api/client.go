@@ -7,10 +7,9 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
-	"github.com/KaiL0r/netcup-cli/internal/auth"
+	"github.com/KaiL0r/netcup-cli/auth"
 )
 
 //
@@ -23,16 +22,11 @@ type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-type AuthProvider interface {
-	GetAccessToken() (string, error)
-	DeviceFlow() (string, error)
-}
-
 type Client struct {
 	BaseURL string
 
 	HTTP HTTPClient
-	Auth AuthProvider
+	Auth auth.AuthProvider
 }
 
 type APIError struct {
@@ -46,22 +40,15 @@ type APIError struct {
 // ======================
 //
 
-func MustClient() *Client {
-	tokenProvider := auth.NewService(
-		auth.NewHTTPOAuthClient(),
-		auth.NewFileStorage(),
-		auth.RealClock{},
-	)
-
-	baseURL := os.Getenv("NETCUP_SCP_BASE_URL")
-	if baseURL == "" {
-		baseURL = "https://servercontrolpanel.de/scp-core/api/v1"
+func NewClient(baseUrl string, authProvider auth.AuthProvider, httpClient HTTPClient) *Client {
+	if baseUrl == "" {
+		baseUrl = "https://servercontrolpanel.de/scp-core/api/v1"
 	}
 
 	return &Client{
-		BaseURL: baseURL,
-		HTTP:    http.DefaultClient,
-		Auth:    tokenProvider,
+		BaseURL: baseUrl,
+		HTTP:    httpClient,
+		Auth:    authProvider,
 	}
 }
 
