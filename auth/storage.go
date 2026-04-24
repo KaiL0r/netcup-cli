@@ -23,7 +23,7 @@ type FileStorage struct {
 }
 
 func NewFileStorage(tokenPath string) TokenStorage {
-	if tokenPath != "" {
+	if tokenPath == "" {
 		home, _ := os.UserHomeDir()
 		tokenPath = filepath.Join(home, ".config", "netcup-cli", "token.json")
 	}

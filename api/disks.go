@@ -14,6 +14,15 @@ type Disk struct {
 	StorageDriver   StorageDriver `json:"storageDriver"`
 }
 
+type StorageDriver string
+
+const (
+	StorageDriverVirtIo     StorageDriver = "VIRTIO"
+	StorageDriverVirtIoScsi StorageDriver = "VIRTIO_SCSI"
+	StorageDriverIde        StorageDriver = "IDE"
+	StorageDriverSata       StorageDriver = "SATA"
+)
+
 func (c *Client) ListDisks(serverId int) ([]Disk, error) {
 	u, _ := url.Parse(fmt.Sprintf("/servers/%d/disks", serverId))
 
@@ -41,15 +50,6 @@ func (c *Client) GetDisk(serverId int, diskName string) (Disk, error) {
 
 	return disk, nil
 }
-
-type StorageDriver string
-
-const (
-	StorageDriverVirtIo     StorageDriver = "VIRTIO"
-	StorageDriverVirtIoScsi StorageDriver = "VIRTIO_SCSI"
-	StorageDriverIde        StorageDriver = "IDE"
-	StorageDriverSata       StorageDriver = "SATA"
-)
 
 func (c *Client) ListDiskSupportedDrivers(serverId int) ([]StorageDriver, error) {
 	u, _ := url.Parse(fmt.Sprintf("/servers/%d/disks/supported-drivers", serverId))
