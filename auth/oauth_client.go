@@ -25,6 +25,7 @@ type TokenResponse struct {
 	RefreshToken string `json:"refresh_token"`
 	ExpiresIn    int    `json:"expires_in"`
 	TokenType    string `json:"token_type"`
+	Error        string `json:"error"`
 }
 
 // ======================
@@ -93,17 +94,13 @@ func (c *HTTPOAuthClient) PollForToken(deviceCode string, interval int) (*TokenR
 		if err != nil {
 			return nil, err
 		}
+		defer resp.Body.Close()
 
-		var r struct {
-			AccessToken string `json:"access_token"`
-			Error       string `json:"error"`
-		}
-
+		var r TokenResponse
 		_ = json.NewDecoder(resp.Body).Decode(&r)
-		_ = resp.Body.Close()
 
 		if r.AccessToken != "" {
-			return &TokenResponse{AccessToken: r.AccessToken}, nil
+			return &r, nil
 		}
 
 		if r.Error != "" {
@@ -134,6 +131,10 @@ func (c *HTTPOAuthClient) RefreshToken(refreshToken string) (*TokenResponse, err
 		return nil, err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		return &TokenResponse{}, fmt.Errorf("refresh failed: %s", resp.Status)
+	}
 
 	var result TokenResponse
 	err = json.NewDecoder(resp.Body).Decode(&result)
